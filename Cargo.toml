@@ -52,7 +52,6 @@ indexmap = {version = "1", features = ["serde-1"]}
 lazy_static = "1"
 libflate = "1.0"
 log = "0.4"
-log4rs = "1.0"
 lz4 = "1.23.2"
 pin-project-lite = "0.2"
 rand = "0.8"
@@ -117,7 +116,6 @@ version = "0.13"
 [dev-dependencies]
 matches = "0.1"
 # criterion = "0.2"
-env_logger = "0.8"
 pretty_assertions = "0.6.1"
 regex = "1"
 
