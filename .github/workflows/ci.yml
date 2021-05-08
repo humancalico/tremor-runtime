@@ -10,7 +10,7 @@ jobs:
       matrix:
         # test-kind: [integration, api, unit, command]
         include:
-          - os: macos-11.0
+          - os: macos-10.15
             kind: test
             profile: debug
           - os: ubuntu-20.04
@@ -43,8 +43,6 @@ jobs:
       - name: install rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          profile: minimal
           components: rustfmt, clippy
 
       - name: log versions
@@ -83,33 +81,33 @@ jobs:
           cargo test --all --locked --doc
           cargo test --all --locked
 
-      # - name: test ${{ matrix.test-kind }} debug
-      #   if: matrix.kind == 'test' && matrix.profile == 'debug'
-      #   run: |
-      #     cargo build -p tremor-cli --locked -- test ${{ matrix.test-kind }} tremor-cli/tests
+      - name: test ${{ matrix.test-kind }} debug
+        if: matrix.kind == 'test' && matrix.profile == 'debug'
+        run: |
+          cargo build -p tremor-cli --locked -- test ${{ matrix.test-kind }} tremor-cli/tests
 
-      # - name: test ${{ matrix.test-kind }} release
-      #   if: matrix.kind == 'test' && matrix.profile == 'release'
-      #   run: |
-      #     cargo build --release -p tremor-cli --locked -- test ${{ matrix.test-kind }} tremor-cli/tests
+      - name: test ${{ matrix.test-kind }} release
+        if: matrix.kind == 'test' && matrix.profile == 'release'
+        run: |
+          cargo build --release -p tremor-cli --locked -- test ${{ matrix.test-kind }} tremor-cli/tests
 
-      # - name: upload error logs
-      #   uses: actions/upload-artifact@v2
-      #   if: failure()
-      #   with:
-      #     name: test-errors
-      #     path: tremor-cli/tests/**/*.log
+      - name: upload error logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-errors
+          path: tremor-cli/tests/**/*.log
 
-      # - name: run cargo-tarpaulin
-      #   uses: actions-rs/tarpaulin@v0.1
-      #   with:
-      #     version: "0.16.0"
-      #     args: --exclude-files target* tremor-cli tremor-api deprecated **/errors.rs --out Lcov --all
+      - name: run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          version: "0.16.0"
+          args: --exclude-files target* tremor-cli tremor-api deprecated **/errors.rs --out Lcov --all
 
-      # - name: coveralls
-      #   uses: coverallsapp/github-action@master
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     path-to-lcov: ./lcov.info
+      - name: coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./lcov.info
 
       # TODO add a github release workflow
