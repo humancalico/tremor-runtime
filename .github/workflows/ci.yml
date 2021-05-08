@@ -8,17 +8,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # test-kind: [integration, api, unit, command]
         include:
           - os: macos-10.15
             kind: test
             profile: debug
+            test-kind: [integration, api, unit, command]
           - os: ubuntu-20.04
             kind: lint
             profile: debug
           - os: ubuntu-20.04
             kind: test
             profile: debug
+            test-kind: [integration, api, unit, command]
 
       # Always run main branch builds to completion. This allows the cache to
       # stay mostly up-to-date in situations where a single job fails due to
