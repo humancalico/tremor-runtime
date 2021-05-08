@@ -57,6 +57,12 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+      
+      - name: install dependencies
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo apt update -qy
+          sudo apt install -y libssl-dev libssl1.1
 
       - name: check clippy
         if: matrix.kind == 'lint'
