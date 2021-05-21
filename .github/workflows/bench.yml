@@ -36,17 +36,33 @@ jobs:
         run: |
           ./target/release/tremor test bench tremor-cli/tests/bench/ -o
 
-      - name: post benchmark results
+      - name: download previous artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: data.json
+
+      - name: download previous artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: recent.json
+
+      - name: parse benchmark results
         env:
-          TREMORBOT_TOKEN: ${{ secrets.TREMORBOT_TOKEN }}
+          TREMOR_BENCH_VERSION: 0.1.2
         run: |
-          git clone --depth 1 -b data https://${TREMORBOT_TOKEN}@github.com/humancalico/tremor-benchmark.git data
-          cd data
-          curl -o tremor-bench.zip -L https://github.com/humancalico/tremor-benchmark/releases/download/v0.1.1/tremor-benchmark-x86_64-unknown-linux-musl.zip
+          curl -o tremor-bench.zip -L https://github.com/humancalico/tremor-benchmark/releases/download/v$TREMOR_BENCH_VERSION/tremor-benchmark-x86_64-unknown-linux-musl.zip
           unzip tremor-bench.zip
-          ./tremor-benchmark data.json recent.json ../report.json $GITHUB_SHA
-          git config user.email "humancalico+tremorbot@disroot.org" # need a different email pls
-          git config user.name "tremorbot"
-          git add data.json recent.json
-          git commit --message "chore: update benchmarks"
-          git push origin data
+          touch data.json
+          touch recent.json
+          ./tremor-benchmark data.json recent.json report.json $GITHUB_SHA
+        
+      - name: upload benchmark results as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: data.json
+
+      - name: upload benchmark results as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: recent.json
+
